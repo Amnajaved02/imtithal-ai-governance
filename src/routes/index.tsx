@@ -841,7 +841,7 @@ function Results({
         <div className="rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:p-4">
           <div className="radar-wrap h-64 w-full sm:h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData} outerRadius="68%">
+              <RadarChart data={radarData} outerRadius="78%">
                 <PolarGrid stroke="var(--border)" />
                 <PolarAngleAxis
                   dataKey="pillar"
@@ -849,7 +849,8 @@ function Results({
                 />
                 <PolarRadiusAxis
                   domain={[0, 100]}
-                  tick={{ fill: "var(--muted-foreground)", fontSize: 9 }}
+                  tick={false}
+                  axisLine={false}
                   stroke="var(--border)"
                 />
                 <Radar
