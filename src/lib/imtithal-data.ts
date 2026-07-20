@@ -298,6 +298,7 @@ export const T = {
       en: "This content was generated in a different language.",
     },
     regenerate: { ar: "إعادة التوليد بالعربية", en: "Regenerate in English" },
+    regenerating: { ar: "جارٍ إعادة التوليد بالعربية…", en: "Regenerating in English…" },
   },
   levels: [
     { min: 0, max: 20, ar: "المستوى 1 · مبدئي", en: "Level 1 · Initial" },

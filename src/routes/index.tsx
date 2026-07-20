@@ -71,6 +71,18 @@ function ImtithalApp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [step, pillarIdx]);
 
+  /* The summary is model-generated, so switching language means regenerating it.
+     It is a single fast call, so we do it automatically. The deep analysis is a
+     full agent run and stays behind an explicit button. */
+  useEffect(() => {
+    if (step !== "results") return;
+    if (!summary) return;
+    if (summaryLoading) return;
+    if (summaryLang === lang) return;
+    void submitAssessment();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lang, step]);
+
   const restart = () => {
     setStep("landing");
     setIntake(initialIntake);
@@ -150,10 +162,10 @@ function ImtithalApp() {
         t={t}
       />
       <main className="mx-auto max-w-5xl px-4 py-8 md:py-12">
-        {summaryLoading && (
+        {summaryLoading && step !== "results" && (
           <FullScreenLoading lang={lang} />
         )}
-        {!summaryLoading && (
+        {!(summaryLoading && step !== "results") && (
           <>
         {step === "landing" && (
           <Landing lang={lang} t={t} onStart={() => setStep("intake")} />
@@ -192,6 +204,7 @@ function ImtithalApp() {
             summary={summary}
             summaryError={summaryError}
             summaryLang={summaryLang}
+            summaryLoading={summaryLoading}
             onRegenerate={submitAssessment}
           />
         )}
@@ -671,6 +684,7 @@ function Results({
   summary,
   summaryError,
   summaryLang,
+  summaryLoading,
   onRegenerate,
 }: {
   lang: Lang;
@@ -680,6 +694,7 @@ function Results({
   summary: string | null;
   summaryError: boolean;
   summaryLang: Lang;
+  summaryLoading: boolean;
   onRegenerate: () => void;
 }) {
   const scores = usePillarScores(answers);
@@ -882,18 +897,25 @@ function Results({
         ))}
       </div>
 
-      {(summary || summaryError) && (
+      {(summary || summaryError || summaryLoading) && (
         <div className="exec-summary print-card mt-10 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
           <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">
             {t(T.report.exec)}
           </div>
+          {summaryLoading ? (
+            <p className="mt-3 flex items-center gap-2 text-[1.05rem] text-muted-foreground">
+              <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary" />
+              {t(T.report.regenerating)}
+            </p>
+          ) : (
           <p className="mt-3 max-w-[70ch] text-[1.05rem] leading-[1.75] text-foreground">
             {summary ??
               (lang === "ar"
                 ? `${T.report.execLine.ar(level)} الدرجة الإجمالية ${overall}%.`
                 : `${T.report.execLine.en(level)} Overall score ${overall}%.`)}
           </p>
-          {summaryStale && (
+          )}
+          {summaryStale && !summaryLoading && (
             <div className="no-print mt-4 flex flex-wrap items-center gap-3 border-t border-border pt-4">
               <span className="text-sm text-muted-foreground">
                 {t(T.report.staleLang)}
