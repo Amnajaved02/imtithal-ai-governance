@@ -900,7 +900,7 @@ function Results({
               {t(T.report.regenerating)}
             </p>
           ) : (
-          <p className="mt-4 max-w-[70ch] text-[1.05rem] leading-[1.75] text-foreground">
+          <p className="mt-4 max-w-[85ch] text-[1.05rem] leading-[1.75] text-foreground">
             {summary ??
               (lang === "ar"
                 ? `${T.report.execLine.ar(level)} الدرجة الإجمالية ${overall}%.`
