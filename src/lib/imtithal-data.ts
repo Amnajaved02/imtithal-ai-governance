@@ -280,6 +280,10 @@ export const T = {
       en: "Deep analysis unavailable right now",
     },
     title: { ar: "التحليل المعمّق", en: "Deep Analysis" },
+    explain: {
+      ar: "يحلّل الوكيل أعلى ثلاث فجوات لديكم، ويعبّئ لكم مستندات امتثال مبدئية جاهزة للتحرير (بطاقة نموذج، تقييم أثر، خطة استجابة للحوادث). قد يستغرق حتى دقيقة.",
+      en: "The agent works through your three highest-priority gaps and fills in starter compliance documents you can edit — model card, impact assessment, incident response plan. Takes up to a minute.",
+    },
     copy: { ar: "نسخ", en: "Copy" },
     copied: { ar: "تم النسخ", en: "Copied" },
   },

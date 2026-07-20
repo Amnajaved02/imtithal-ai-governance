@@ -169,9 +169,84 @@
 }
 
 @media print {
+  @page {
+    margin: 14mm 12mm;
+  }
+
   .no-print { display: none !important; }
   body { background: white !important; }
   .print-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+
+  /* Preformatted agent output was being clipped at the page edge. Let it wrap. */
+  pre,
+  code,
+  .doc-card pre,
+  .doc-card code {
+    white-space: pre-wrap !important;
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+    overflow: visible !important;
+    max-width: 100% !important;
+    font-size: 10.5pt !important;
+  }
+
+  /* Keep logical blocks intact across page boundaries. */
+  .doc-card,
+  .pillar-card,
+  .exec-summary,
+  table,
+  figure,
+  img,
+  svg {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Headings should not be orphaned at the foot of a page. */
+  h1, h2, h3, h4 {
+    break-after: avoid !important;
+    page-break-after: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Tables must not run off the page. */
+  table {
+    width: 100% !important;
+    table-layout: fixed !important;
+    font-size: 10pt !important;
+  }
+  th, td {
+    word-break: break-word !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  /* The radar labels collide at screen size when scaled for print. */
+  .radar-wrap {
+    height: 300px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Start the analysis on its own page so findings read cleanly. */
+  .print-page-break {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  /* Flatten interactive chrome that reads as noise on paper. */
+  .doc-card {
+    border: 1px solid #ccc !important;
+    background: #fafafa !important;
+  }
+  .placeholder-pill {
+    border: 1px dashed #b45309 !important;
+    background: transparent !important;
+  }
 }
 
 @utility input {

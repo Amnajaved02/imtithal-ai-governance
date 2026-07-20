@@ -594,11 +594,6 @@ function Assessment({
                   <p className="text-base font-medium leading-relaxed text-foreground">
                     {t(q)}
                   </p>
-                  {(lang === "ar" ? q.en : q.ar) && (
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {lang === "ar" ? q.en : q.ar}
-                    </p>
-                  )}
                   <div
                     role="radiogroup"
                     aria-label={t(T.assess.answerLegend)}
@@ -740,6 +735,10 @@ function Results({
 
   const runDeep = async () => {
     if (deepLoading) return; // guard against double-click
+    // Move the user down to the pending panel immediately, so the wait is visible.
+    window.setTimeout(() => {
+      deepRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 60);
     setDeepLoading(true);
     setDeepError(false);
     setDeepAnalysis(null);
@@ -820,6 +819,9 @@ function Results({
           >
             {deepLoading ? t(T.deep.running) : t(T.deep.button)}
           </button>
+          <p className="no-print mt-2 text-[0.8rem] leading-relaxed text-muted-foreground">
+            {t(T.deep.explain)}
+          </p>
           <button
             onClick={() => window.print()}
             className="no-print mt-3 w-full rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold text-foreground transition hover:bg-muted"
@@ -829,7 +831,7 @@ function Results({
         </div>
 
         <div className="rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:p-4">
-          <div className="h-64 w-full sm:h-72">
+          <div className="radar-wrap h-64 w-full sm:h-72">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} outerRadius="68%">
                 <PolarGrid stroke="var(--border)" />
@@ -858,7 +860,7 @@ function Results({
         {scores.map(({ pillar, pct }) => (
           <div
             key={pillar.id}
-            className="rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-card)]"
+            className="pillar-card rounded-xl border border-border bg-card p-4 shadow-[var(--shadow-card)]"
           >
             <div className="text-xs font-medium leading-snug text-muted-foreground">
               {t(pillar)}
@@ -881,7 +883,7 @@ function Results({
       </div>
 
       {(summary || summaryError) && (
-        <div className="mt-10 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
+        <div className="exec-summary print-card mt-10 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
           <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">
             {t(T.report.exec)}
           </div>
@@ -908,7 +910,7 @@ function Results({
       )}
 
       {deepLoading && (
-        <div className="mt-10 flex items-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 text-[0.95rem] text-muted-foreground shadow-[var(--shadow-card)]">
+        <div ref={deepRef} className="mt-10 flex items-center gap-3 rounded-2xl border border-border bg-card px-6 py-5 text-[0.95rem] text-muted-foreground shadow-[var(--shadow-card)]">
           <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary" />
           {t(T.deep.loading)}
         </div>
@@ -924,7 +926,7 @@ function Results({
       {deepAnalysis && !deepLoading && (
         <div
           ref={deepRef}
-          className="mt-10 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8"
+          className="print-page-break print-card mt-10 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8"
         >
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
             <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
@@ -938,9 +940,17 @@ function Results({
             </button>
           </div>
           {deepStale && (
-            <p className="no-print mb-4 text-sm text-muted-foreground">
-              {t(T.report.staleLang)}
-            </p>
+            <div className="no-print mb-4 flex flex-wrap items-center gap-3">
+              <span className="text-sm text-muted-foreground">
+                {t(T.report.staleLang)}
+              </span>
+              <button
+                onClick={runDeep}
+                className="rounded-md border border-border bg-card px-3 py-1.5 text-sm font-semibold text-primary transition hover:bg-muted"
+              >
+                {t(T.report.regenerate)}
+              </button>
+            </div>
           )}
           <AnalysisMarkdown markdown={deepAnalysis} lang={deepLang} />
         </div>
@@ -1005,7 +1015,7 @@ function Field({
   const hintId = id ? `${id}-hint` : undefined;
   const errorId = id ? `${id}-error` : undefined;
   return (
-    <div className="block">
+    <div className="flex h-full flex-col">
       <label htmlFor={id} className="block">
         <span className="mb-1 flex flex-wrap items-center gap-2 text-sm font-semibold text-foreground">
           {label}
@@ -1024,7 +1034,10 @@ function Field({
           </span>
         )}
       </label>
-      <div aria-describedby={[hintId, error ? errorId : null].filter(Boolean).join(" ") || undefined}>
+      <div
+        className="mt-auto"
+        aria-describedby={[hintId, error ? errorId : null].filter(Boolean).join(" ") || undefined}
+      >
         {children}
       </div>
       {error && (

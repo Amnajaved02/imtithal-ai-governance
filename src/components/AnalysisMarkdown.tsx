@@ -103,6 +103,37 @@ function DocumentCard({ children, lang }: { children: ReactNode; lang: Lang }) {
   const badge = lang === "ar" ? "مستند مبدئي" : "Starter Document";
   const copyLabel = lang === "ar" ? "نسخ" : "Copy";
   const copiedLabel = lang === "ar" ? "تم النسخ" : "Copied";
+  const downloadLabel = lang === "ar" ? "تنزيل" : "Download";
+
+  /** Derive a filename from the document's first heading, falling back to a generic name. */
+  const fileName = (() => {
+    const firstHeading = raw
+      .split("\n")
+      .find((l) => l.trim().startsWith("#"));
+    const title = (firstHeading ?? "").replace(/^#+\s*/, "").trim();
+    const slug = title
+      .replace(/[^\p{L}\p{N}\s-]/gu, "")
+      .trim()
+      .replace(/\s+/g, "-")
+      .slice(0, 60);
+    return `${slug || (lang === "ar" ? "مستند-مبدئي" : "starter-document")}.md`;
+  })();
+
+  const download = () => {
+    try {
+      const blob = new Blob([raw], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      console.error("Download failed", e);
+    }
+  };
 
   const copy = async () => {
     try {
@@ -119,14 +150,22 @@ function DocumentCard({ children, lang }: { children: ReactNode; lang: Lang }) {
       <div className="flex items-start justify-between gap-3">
         <span className="doc-card-badge">
           <span className="inline-block h-1.5 w-1.5 rounded-full bg-primary" />
-          {badge} · {lang === "ar" ? "Starter Document" : "مستند مبدئي"}
+          {badge}
         </span>
-        <button
-          onClick={copy}
-          className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground transition hover:bg-muted"
-        >
-          {copied ? copiedLabel : copyLabel}
-        </button>
+        <div className="no-print flex shrink-0 gap-2">
+          <button
+            onClick={copy}
+            className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-foreground transition hover:bg-muted"
+          >
+            {copied ? copiedLabel : copyLabel}
+          </button>
+          <button
+            onClick={download}
+            className="rounded-md border border-border bg-card px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-muted"
+          >
+            {downloadLabel}
+          </button>
+        </div>
       </div>
       <div className="analysis-prose text-[0.98rem]">
         {children}
