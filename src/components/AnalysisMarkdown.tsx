@@ -9,6 +9,11 @@ interface Props {
   lang: Lang;
 }
 
+/* The card already carries a "Starter Document" badge. If the agent emits its own
+   label line as well, drop it rather than showing the heading twice. */
+const REDUNDANT_LABEL_RE =
+  /^\s*\**\s*(starter\s+document|filled(?:-in)?\s+starter\s+document|مستند\s+مبدئي|المستند\s+المبدئي)\s*[:：]?\s*\**\s*$/i;
+
 // Regex for placeholders like [To be completed], [اسم الجهة], [DATE], {{name}}
 const PLACEHOLDER_RE = /(\[[^\]\n]{2,80}\]|\{\{[^}\n]{2,80}\}\})/g;
 
@@ -184,7 +189,11 @@ export default function AnalysisMarkdown({ markdown, lang }: Props) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          p: ({ children }) => <p>{decorate(children)}</p>,
+          p: ({ children }) => {
+            const asText = extractText(children).trim();
+            if (REDUNDANT_LABEL_RE.test(asText)) return null;
+            return <p>{decorate(children)}</p>;
+          },
           li: ({ children }) => <li>{decorate(children)}</li>,
           h1: ({ children }) => <h1>{decorate(children)}</h1>,
           h2: ({ children }) => <h2>{decorate(children)}</h2>,

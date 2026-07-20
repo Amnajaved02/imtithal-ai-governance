@@ -294,10 +294,6 @@ function Landing({
 }) {
   return (
     <section className="mt-6 flex flex-col items-start gap-8 md:mt-14">
-      <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/15 px-3 py-1 text-xs font-medium text-accent-foreground">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-accent" />
-        {lang === "ar" ? "2026 · عام الذكاء الاصطناعي" : "2026 · Year of AI"}
-      </div>
       <h1
         className={`max-w-3xl text-3xl font-bold leading-tight tracking-tight text-foreground md:text-5xl ${
           lang === "ar" ? "text-start" : ""
@@ -802,10 +798,7 @@ function Results({
 
   return (
     <section>
-      <SectionTitle
-        eyebrow={lang === "ar" ? "النتائج" : "Results"}
-        title={t(T.results.title)}
-      />
+      <SectionTitle title={t(T.results.title)} />
 
       <div className="mt-6 grid gap-6 md:grid-cols-[1fr_1.2fr]">
         <div className="rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-6">
@@ -899,16 +892,14 @@ function Results({
 
       {(summary || summaryError || summaryLoading) && (
         <div className="exec-summary print-card mt-10 rounded-2xl border border-border bg-card p-6 shadow-[var(--shadow-card)] sm:p-8">
-          <div className="text-xs font-semibold uppercase tracking-[0.14em] text-primary/80">
-            {t(T.report.exec)}
-          </div>
+          <PanelHeading>{t(T.report.exec)}</PanelHeading>
           {summaryLoading ? (
             <p className="mt-3 flex items-center gap-2 text-[1.05rem] text-muted-foreground">
               <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-primary" />
               {t(T.report.regenerating)}
             </p>
           ) : (
-          <p className="mt-3 max-w-[70ch] text-[1.05rem] leading-[1.75] text-foreground">
+          <p className="mt-4 max-w-[70ch] text-[1.05rem] leading-[1.75] text-foreground">
             {summary ??
               (lang === "ar"
                 ? `${T.report.execLine.ar(level)} الدرجة الإجمالية ${overall}%.`
@@ -951,9 +942,7 @@ function Results({
           className="print-page-break print-card mt-10 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-card)] sm:p-8"
         >
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              {t(T.deep.title)}
-            </h2>
+            <PanelHeading>{t(T.deep.title)}</PanelHeading>
             <button
               onClick={copyDeep}
               className="no-print rounded-md border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground transition hover:bg-muted"
@@ -1002,18 +991,29 @@ function SectionTitle({
   eyebrow,
   title,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
 }) {
   return (
     <div>
-      <div className="text-xs font-semibold uppercase tracking-widest text-accent-foreground/70">
-        {eyebrow}
-      </div>
+      {eyebrow && (
+        <div className="text-xs font-semibold uppercase tracking-widest text-accent-foreground/70">
+          {eyebrow}
+        </div>
+      )}
       <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground md:text-4xl">
         {title}
       </h1>
     </div>
+  );
+}
+
+/** One shared style for every panel heading, so sections read as a set. */
+function PanelHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+      {children}
+    </h2>
   );
 }
 
