@@ -838,8 +838,8 @@ function Results({
           </button>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:p-4">
-          <div className="radar-wrap h-64 w-full sm:h-72">
+        <div className="flex rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-card)] sm:p-4">
+          <div className="radar-wrap h-full min-h-64 w-full sm:min-h-72">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} outerRadius="78%">
                 <PolarGrid stroke="var(--border)" />
