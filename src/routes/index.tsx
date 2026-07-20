@@ -310,9 +310,6 @@ function Landing({
       >
         {t(T.landing.cta)}
       </button>
-      <p className="max-w-2xl text-xs text-muted-foreground">
-        {t(T.landing.disclaimer)}
-      </p>
       <div className="mt-6 grid w-full grid-cols-1 gap-4 md:grid-cols-5">
         {PILLARS.map((p, i) => (
           <div
